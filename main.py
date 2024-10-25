@@ -35,7 +35,7 @@ plt.show()
 alpha = 1.0
 beta = 5.0
 evaporation_rate = 0.001
-n_ants = 5
+n_ants = 5 #5 formigas para cada cidade
 n_iterations = 10000
 
 # Inicialização de feromônios
