@@ -4,9 +4,9 @@ Integrantes:
 
 Felipe Porto Caldeira do Nascimento
 
-Alexandre Hennin Wahl
+Alexandre Henning Wahl
 
-[Baixar Relatorio] (https://github.com/SOLDATO2/Projeto-PesquisaOperacional/raw/refs/heads/main/Relatorio_Pesquisa_Operacional.odt)
+[Baixar Relatorio](https://github.com/SOLDATO2/Projeto-PesquisaOperacional/raw/refs/heads/main/Relatorio_Pesquisa_Operacional.odt)
 
 # Objetivo
 Este projeto visa utilizar um problema real onde pesquisa operacional pode ser utilizada para encotrar uma solução.
