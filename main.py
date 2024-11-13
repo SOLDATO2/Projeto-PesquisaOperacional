@@ -36,9 +36,9 @@ plt.title("Grafo das Distâncias entre Cidades")
 plt.show()
 
 ##################### MÉTODO DAS FORMIGAS ######################
-alpha = 1.0
-beta = 5.0
-evaporation_rate = 0.001
+alpha = 1.0 #importancia do feromonio
+beta = 5.0 #importancia da distancia
+evaporation_rate = 0.001 #taxa de evaporação 
 n_ants = 10
 n_iterations = 100
 
@@ -49,15 +49,17 @@ feromonios = {cidade: {destino: 1.0 for destino in distancias[cidade]} for cidad
 def construir_rota(cidade_inicial):
     rota = [cidade_inicial]
     cidades_restantes = cidades.copy()
-    cidades_restantes.remove(cidade_inicial)
+    cidades_restantes.remove(cidade_inicial) #remove a cidade de inicio pois ja passamos por ela
 
     while cidades_restantes:
-        cidade_atual = rota[-1]
+        cidade_atual = rota[-1] #pega a cidade atual
         probabilidade = []
         # Fórmula 1
         for cidade in cidades_restantes:
             tau = feromonios[cidade_atual][cidade] ** alpha
+            #tau representa o nivel de feromonio entre a cidade atual e a cidade destino
             eta = (1.0 / distancias[cidade_atual][cidade]) ** beta
+            #eta representa a atratividade do caminho
             probabilidade.append(tau * eta)
         
         total_probabilidade = sum(probabilidade)
@@ -78,8 +80,15 @@ def calcular_custo(rota):
 def aco():
     melhor_rota, melhor_custo = None, float('inf')
     for _ in range(n_iterations):
-        todas_rotas = [(construir_rota(random.choice(cidades)), calcular_custo(construir_rota(random.choice(cidades)))) for _ in range(n_ants)]
-        
+        todas_rotas = [ #forma uma lista que contem uma lista de strings que formam uma rota em sequencia
+                        #e no fim o custo da rota
+            #(['Água Verde', 'Batel', 'Portão', 'Alto da XV', 'Uberaba', 'Boqueirão', 'Cajuru', 'Sítio Cercado', 'Santa Felicidade', 'CIC', 'Água Verde'], 82)
+            #...
+            #isso se repete 10 vezes para as 10 formigas
+            (construir_rota(random.choice(cidades)), calcular_custo(construir_rota(random.choice(cidades)))) for _ in range(n_ants)
+            
+            ]
+        #armazena a rota com o menor custo
         for rota, custo in todas_rotas:
             if custo < melhor_custo:
                 melhor_rota, melhor_custo = rota, custo
