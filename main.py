@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import time
 
 # Lista de todos os bairros
-cidades = ["CIC", "Sítio Cercado", "Cajuru", "Boqueirão", "Uberaba", "Portão", "Alto da XV", "Santa Felicidade", "Batel", "Água Verde"]
+bairros = ["CIC", "Sítio Cercado", "Cajuru", "Boqueirão", "Uberaba", "Portão", "Alto da XV", "Santa Felicidade", "Batel", "Água Verde"]
 
 # Dicionário de distâncias entre cada par de bairros
 distancias = {
@@ -23,16 +23,16 @@ distancias = {
 # GRAFO
 grafo = nx.Graph()
 
-for cidade, destinos in distancias.items():
+for bairro, destinos in distancias.items():
     for destino, distancia in destinos.items():
-        grafo.add_edge(cidade, destino, weight=distancia)
+        grafo.add_edge(bairro, destino, weight=distancia)
 
 pos = nx.circular_layout(grafo)
 nx.draw(grafo, pos, with_labels=True, node_color='lightblue', node_size=2000, font_size=10, font_color='black', font_weight='bold', edge_color='gray')
 edge_labels = nx.get_edge_attributes(grafo, 'weight')
 nx.draw_networkx_edge_labels(grafo, pos, edge_labels=edge_labels)
 
-plt.title("Grafo das Distâncias entre Cidades")
+plt.title("Grafo das Distâncias entre bairros")
 plt.show()
 
 ##################### MÉTODO DAS FORMIGAS ######################
@@ -42,34 +42,34 @@ evaporation_rate = 0.001 #taxa de evaporação
 n_ants = 10
 n_iterations = 100
 
-# Atribuindo feromônio base "1" para as cidades
-feromonios = {cidade: {destino: 1.0 for destino in distancias[cidade]} for cidade in cidades}
+# Atribuindo feromônio base "1" para as bairros
+feromonios = {bairro: {destino: 1.0 for destino in distancias[bairro]} for bairro in bairros}
 
 # Função que encontra a solução para cada formiga
-def construir_rota(cidade_inicial):
-    rota = [cidade_inicial]
-    cidades_restantes = cidades.copy()
-    cidades_restantes.remove(cidade_inicial) #remove a cidade de inicio pois ja passamos por ela
+def construir_rota(bairro_inicial):
+    rota = [bairro_inicial]
+    bairros_restantes = bairros.copy()
+    bairros_restantes.remove(bairro_inicial) #remove a bairro de inicio pois ja passamos por ela
 
-    while cidades_restantes:
-        cidade_atual = rota[-1] #pega a cidade atual
+    while bairros_restantes:
+        bairro_atual = rota[-1] #pega a bairro atual
         probabilidade = []
         # Fórmula 1
-        for cidade in cidades_restantes:
-            tau = feromonios[cidade_atual][cidade] ** alpha
-            #tau representa o nivel de feromonio entre a cidade atual e a cidade destino
-            eta = (1.0 / distancias[cidade_atual][cidade]) ** beta
+        for bairro in bairros_restantes:
+            tau = feromonios[bairro_atual][bairro] ** alpha
+            #tau representa o nivel de feromonio entre a bairro atual e a bairro destino
+            eta = (1.0 / distancias[bairro_atual][bairro]) ** beta
             #eta representa a atratividade do caminho
             probabilidade.append(tau * eta)
         
         total_probabilidade = sum(probabilidade)
         probabilidade = [p / total_probabilidade for p in probabilidade]
         
-        proxima_cidade = random.choices(cidades_restantes, probabilidade)[0]
-        rota.append(proxima_cidade)
-        cidades_restantes.remove(proxima_cidade)
+        proximo_bairro = random.choices(bairros_restantes, probabilidade)[0]
+        rota.append(proximo_bairro)
+        bairros_restantes.remove(proximo_bairro)
 
-    rota.append(cidade_inicial)
+    rota.append(bairro_inicial)
     return rota
 
 # Calcula o custo da rota
@@ -89,7 +89,7 @@ def aco():
         #(['Água Verde', 'Batel', 'Portão', 'Alto da XV', 'Uberaba', 'Boqueirão', 'Cajuru', 'Sítio Cercado', 'Santa Felicidade', 'CIC', 'Água Verde'], 82)
         #...
         #isso se repete 10 vezes para as 10 formigas
-        todas_rotas = [(rota := construir_rota(random.choice(cidades)), calcular_custo(rota)) for _ in range(n_ants)]
+        todas_rotas = [(rota := construir_rota(random.choice(bairros)), calcular_custo(rota)) for _ in range(n_ants)]
 
         
         #armazena a rota com o menor custo
@@ -105,25 +105,25 @@ def aco():
         
         # Evaporação
         # Fórmula 3
-        for cidade in feromonios:
-            for destino in feromonios[cidade]:
-                feromonios[cidade][destino] *= (1 - evaporation_rate)
+        for bairro in feromonios:
+            for destino in feromonios[bairro]:
+                feromonios[bairro][destino] *= (1 - evaporation_rate)
 
     return melhor_rota, melhor_custo
 
 ###### MÉTODO VIZINHO MAIS PRÓXIMO ######
-def vizinho_mais_proximo(cidade_inicial):
-    rota, cidades_restantes = [cidade_inicial], cidades.copy()
-    cidades_restantes.remove(cidade_inicial)
+def vizinho_mais_proximo(bairro_inicial):
+    rota, bairros_restantes = [bairro_inicial], bairros.copy()
+    bairros_restantes.remove(bairro_inicial)
 
-    while cidades_restantes:
-        cidade_atual = rota[-1]#define cidade atual como ultima cidade adicionada na rota
-        #para cada cidade em cidades_restantes, obtemos as distancia com o lambda e retorna a cidade com menor distancia com o min
-        cidade_mais_proxima = min(cidades_restantes, key=lambda cidade: distancias[cidade_atual][cidade]) 
-        rota.append(cidade_mais_proxima)
-        cidades_restantes.remove(cidade_mais_proxima)
+    while bairros_restantes:
+        bairro_atual = rota[-1]#define bairro atual como ultima bairro adicionada na rota
+        #para cada bairro em bairros_restantes, obtemos as distancia com o lambda e retorna a bairro com menor distancia com o min
+        bairro_mais_proximo = min(bairros_restantes, key=lambda bairro: distancias[bairro_atual][bairro]) 
+        rota.append(bairro_mais_proximo)
+        bairros_restantes.remove(bairro_mais_proximo)
 
-    rota.append(cidade_inicial)
+    rota.append(bairro_inicial)
     return rota, calcular_custo(rota)
 
 # Execução dos algoritmos
@@ -132,7 +132,7 @@ melhor_rota_aco, melhor_custo_aco = aco()
 fim_aco = time.time()
 
 inicio_vmp = time.perf_counter()
-melhor_rota_vmp, melhor_custo_vmp = vizinho_mais_proximo(random.choice(cidades))
+melhor_rota_vmp, melhor_custo_vmp = vizinho_mais_proximo(random.choice(bairros))
 fim_vmp = time.perf_counter()
 
 
