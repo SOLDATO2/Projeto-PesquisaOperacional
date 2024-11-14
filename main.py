@@ -74,20 +74,24 @@ def construir_rota(cidade_inicial):
 
 # Calcula o custo da rota
 def calcular_custo(rota):
+    #retorna a soma soma de cada verticie em sequencia
+    #ex se a rota for rota = ["CIC", "Boqueirão", "Uberaba", "CIC"]
+    #O calculo será: distancias["CIC"]["Boqueirão"] + distancias["Boqueirão"]["Uberaba"] + distancias["Uberaba"]["CIC"]
     return sum(distancias[rota[i]][rota[i + 1]] for i in range(len(rota) - 1))
 
 # Função principal do ACO
 def aco():
     melhor_rota, melhor_custo = None, float('inf')
     for _ in range(n_iterations):
-        todas_rotas = [ #forma uma lista que contem uma lista de strings que formam uma rota em sequencia
-                        #e no fim o custo da rota
-            #(['Água Verde', 'Batel', 'Portão', 'Alto da XV', 'Uberaba', 'Boqueirão', 'Cajuru', 'Sítio Cercado', 'Santa Felicidade', 'CIC', 'Água Verde'], 82)
-            #...
-            #isso se repete 10 vezes para as 10 formigas
-            (construir_rota(random.choice(cidades)), calcular_custo(construir_rota(random.choice(cidades)))) for _ in range(n_ants)
-            
-            ]
+     
+        #forma uma lista que contem uma lista de strings que formam uma rota em sequencia
+        #e no fim o custo da rota
+        #(['Água Verde', 'Batel', 'Portão', 'Alto da XV', 'Uberaba', 'Boqueirão', 'Cajuru', 'Sítio Cercado', 'Santa Felicidade', 'CIC', 'Água Verde'], 82)
+        #...
+        #isso se repete 10 vezes para as 10 formigas
+        todas_rotas = [(rota := construir_rota(random.choice(cidades)), calcular_custo(rota)) for _ in range(n_ants)]
+
+        
         #armazena a rota com o menor custo
         for rota, custo in todas_rotas:
             if custo < melhor_custo:
@@ -113,8 +117,9 @@ def vizinho_mais_proximo(cidade_inicial):
     cidades_restantes.remove(cidade_inicial)
 
     while cidades_restantes:
-        cidade_atual = rota[-1]
-        cidade_mais_proxima = min(cidades_restantes, key=lambda cidade: distancias[cidade_atual][cidade])
+        cidade_atual = rota[-1]#define cidade atual como ultima cidade adicionada na rota
+        #para cada cidade em cidades_restantes, obtemos as distancia com o lambda e retorna a cidade com menor distancia com o min
+        cidade_mais_proxima = min(cidades_restantes, key=lambda cidade: distancias[cidade_atual][cidade]) 
         rota.append(cidade_mais_proxima)
         cidades_restantes.remove(cidade_mais_proxima)
 
